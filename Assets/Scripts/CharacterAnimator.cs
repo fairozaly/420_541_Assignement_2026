@@ -30,12 +30,6 @@ public class CharacterAnimator : MonoBehaviour
         bool grounded = movement.IsGrounded;
         animator.SetBool("IsGrounded", grounded);
 
-        // roll
-        if (Input.GetButtonUp("Fire1"))
-        {
-            animator.SetTrigger("doRoll");
-        }
-
         // double jump/flip
         if (grounded)
         {

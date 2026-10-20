@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,7 +6,6 @@ public class PlayerStats : MonoBehaviour
 {
     [Header("Player Stats")]
     [SerializeField] private int maxHealth = 3;
-    [SerializeField] private int score = 0;
 
     [Header("Damage Settings")]
     [SerializeField] private float damageCooldown = 1f;
@@ -18,7 +16,7 @@ public class PlayerStats : MonoBehaviour
     private Coroutine scoreBoostCoroutine;
 
     public int Health => currentHealth;
-    public int Score => score;
+    public int Score => GameManager.Instance.Score;
     public bool ScoreBoostActive => scoreBoostActive;
 
     private void Start()
@@ -30,9 +28,8 @@ public class PlayerStats : MonoBehaviour
     public void AddScore(int points)
     {
         int multiplier = scoreBoostActive ? 2 : 1;
-        score += points * multiplier;
 
-        Debug.Log("Score: " + score);
+        GameManager.Instance.AddScore(points * multiplier);
     }
 
     // take damage from a trap
@@ -65,7 +62,7 @@ public class PlayerStats : MonoBehaviour
         canTakeDamage = true;
     }
 
-    // emable double score for a limited duration
+    // enable double score for a limited duration
     public void ActivateScoreBoost(float duration)
     {
         if (scoreBoostCoroutine != null)

@@ -36,6 +36,10 @@ public class CharacterMovement : MonoBehaviour
     private float jumpChargeTime = 0f;
     private float currentJumpForce;
 
+    private float boostMultiplier = 1f;
+    private Coroutine speedBoostCoroutine;
+    private Coroutine doubleJumpCoroutine;
+
     public bool IsGrounded => isGrounded;
     public float SpeedMultiplier { get; set; } = 1f;
 
@@ -92,9 +96,9 @@ public class CharacterMovement : MonoBehaviour
         }
 
         // run while shift is held
-        SpeedMultiplier = Input.GetKey(KeyCode.LeftShift)
-            ? runMultiplier
-            : 1f;
+        SpeedMultiplier =
+            (Input.GetKey(KeyCode.LeftShift) ? runMultiplier : 1f)
+            * boostMultiplier;
 
         // start charging first jump
         if (Input.GetButtonDown("Jump") && isGrounded && !hasJumped)
@@ -213,5 +217,44 @@ public class CharacterMovement : MonoBehaviour
     public void DeactivateDoubleJump()
     {
         doubleJumpPowerUp = false;
+    }
+
+    
+    public void ActivateSpeedBoost(float multiplier, float duration)
+    {
+        if (speedBoostCoroutine != null)
+            StopCoroutine(speedBoostCoroutine);
+
+        speedBoostCoroutine =
+            StartCoroutine(SpeedBoostTimer(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostTimer(float multiplier, float duration)
+    {
+        boostMultiplier = multiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        boostMultiplier = 1f;
+        speedBoostCoroutine = null;
+    }
+
+    public void ActivateTimedDoubleJump(float duration)
+    {
+        if (doubleJumpCoroutine != null)
+            StopCoroutine(doubleJumpCoroutine);
+
+        doubleJumpCoroutine =
+            StartCoroutine(DoubleJumpTimer(duration));
+    }
+
+    private IEnumerator DoubleJumpTimer(float duration)
+    {
+        ActivateDoubleJump();
+
+        yield return new WaitForSeconds(duration);
+
+        DeactivateDoubleJump();
+        doubleJumpCoroutine = null;
     }
 }
